@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 import requests
 from fastapi.middleware.cors import CORSMiddleware
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
+# FastAPI setup 
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -10,6 +14,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Firebase setup
+cred = credentials.Certificate("serviceAccountKey.json")
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+# API KEY from fastFOREX
 api_key = "8af0ed745d-545d45f398-rb7wfs"
 
 @app.get("/currencies")
@@ -48,5 +59,20 @@ async def convert(amount : float, toCurrency: str, fromCurrency : str | None = N
     headers = {"Accept": "application/json"}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
+        db.collection('history').add({
+            'amount': amount,
+            'conversion': response.json()['result'][toCurrency],
+            'from': fromCurrency,
+            'rate': response.json()['result']['rate'],
+            'to': toCurrency
+        })
         return response.json()
     return {}
+
+@app.get("/statistics/history")
+async def statisticsHistory():
+    docs = db.collection('history').get()
+    history = []
+    for doc in docs:
+        history.append(doc.to_dict())
+    return history
