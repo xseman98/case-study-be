@@ -15,3 +15,6 @@ To install the application use these commands
 ## Running the app
 To run the application use command
 `uvicorn main:app --reload`
+
+## Docs
+Documentation for the backend can be found here `http://127.0.0.1:8000/docs`
