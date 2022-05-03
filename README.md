@@ -11,6 +11,7 @@ To install the application use these commands
 3. `pip install fastapi`
 4. `pip install uvicorn`
 5. `pip install requests`
+6. `pip install firebase_admin`
 
 ## Running the app
 To run the application use command
