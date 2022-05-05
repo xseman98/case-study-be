@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+import datetime
 
 # FastAPI setup 
 app = FastAPI()
@@ -64,7 +65,8 @@ async def convert(amount : float, toCurrency: str, fromCurrency : str | None = N
             'conversion': response.json()['result'][toCurrency],
             'from': fromCurrency,
             'rate': response.json()['result']['rate'],
-            'to': toCurrency
+            'to': toCurrency,
+            'datetime': datetime.datetime.now()
         })
         return response.json()
     return {}
